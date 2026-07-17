@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - OPC Maker</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="index.html">OPC Maker</a>
+  </header>
+  <main class="page-content">
+    <h1>Sign Up</h1>
+    <form id="signup-form" class="auth-form">
+      <label>
+        Name
+        <input type="text" name="name" required autocomplete="name">
+      </label>
+      <label>
+        Username
+        <input type="text" name="username" required autocomplete="username" minlength="3">
+      </label>
+      <label>
+        Email
+        <input type="email" name="email" required autocomplete="email">
+      </label>
+      <label>
+        Password
+        <input type="password" name="password" required autocomplete="new-password" minlength="8">
+      </label>
+      <p class="form-error" id="form-error"></p>
+      <button type="submit" class="btn btn-signup">Sign Up</button>
+    </form>
+  </main>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('form-error');
+      errorEl.textContent = '';
+
+      const form = new FormData(e.target);
+      const payload = {
+        name: form.get('name').trim(),
+        username: form.get('username').trim(),
+        email: form.get('email').trim(),
+        password: form.get('password'),
+      };
+
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errorEl.textContent = data.error || 'Sign up failed';
+          return;
+        }
+        localStorage.setItem('opc_token', data.token);
+        localStorage.setItem('opc_user', JSON.stringify(data.user));
+        window.location.href = 'index.html';
+      } catch (err) {
+        errorEl.textContent = 'Could not reach the server';
+      }
+    });
+  </script>
+</body>
+</html>
