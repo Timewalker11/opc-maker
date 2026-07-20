@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppShell } from "./components/layout/AppShell";
+import { AppBootstrap } from "./components/auth/AppBootstrap";
 import { RequireAuth, RequireAuthOnly, RedirectIfAuthed } from "./components/auth/RouteGuards";
 import { Login } from "./pages/Login";
 import { Signup } from "./pages/Signup";
@@ -17,33 +18,35 @@ import { Settings } from "./pages/Settings";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<RedirectIfAuthed />}>
-          <Route path="login" element={<Login />} />
-          <Route path="signup" element={<Signup />} />
-        </Route>
-
-        <Route element={<RequireAuthOnly />}>
-          <Route path="onboarding" element={<Onboarding />} />
-        </Route>
-
-        <Route element={<RequireAuth />}>
-          <Route element={<AppShell />}>
-            <Route index element={<Home />} />
-            <Route path="customers" element={<Customers />} />
-            <Route path="communications" element={<Communications />} />
-            <Route path="marketing" element={<Marketing />} />
-            <Route path="work" element={<Work />} />
-            <Route path="files" element={<Files />} />
-            <Route path="analytics" element={<Analytics />} />
-            <Route path="integrations" element={<Integrations />} />
-            <Route path="agents" element={<Agents />} />
-            <Route path="settings" element={<Settings />} />
+    <AppBootstrap>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<RedirectIfAuthed />}>
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
           </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+
+          <Route element={<RequireAuthOnly />}>
+            <Route path="onboarding" element={<Onboarding />} />
+          </Route>
+
+          <Route element={<RequireAuth />}>
+            <Route element={<AppShell />}>
+              <Route index element={<Home />} />
+              <Route path="customers" element={<Customers />} />
+              <Route path="communications" element={<Communications />} />
+              <Route path="marketing" element={<Marketing />} />
+              <Route path="work" element={<Work />} />
+              <Route path="files" element={<Files />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="integrations" element={<Integrations />} />
+              <Route path="agents" element={<Agents />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AppBootstrap>
   );
 }
 

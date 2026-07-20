@@ -1,32 +1,39 @@
-# React + TypeScript + Vite
+# Business Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A single-owner business operating system: a dashboard for revenue, customers,
+tasks, communications, marketing, and a coordinating AI agent, backed by a
+generic OAuth integration framework for connecting real third-party apps.
 
-Currently, two official plugins are available:
+## Running it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This is two projects: the dashboard (this directory) and its API (`server/`).
 
-## React Compiler
+```
+# Terminal 1 -- API
+cd server
+npm install
+cp .env.example .env
+# generate a real encryption key and drop it into .env as TOKEN_ENCRYPTION_KEY:
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+npm run dev        # http://localhost:4000
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+# Terminal 2 -- dashboard
+npm install
+npm run dev         # http://localhost:5173
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Requires Node 22.5+ (the API uses the built-in `node:sqlite` module, no native
+compilation needed).
+
+Visiting the dashboard with no session redirects to `/login` → sign up →
+a short onboarding wizard (company name, business type, how you heard about
+us) → the dashboard, all persisted in the API's SQLite database.
+
+## Project layout
+
+- `src/` -- the dashboard SPA (React + TypeScript + Vite). Most business data (customers, tasks, emails, etc.) is still mock data; see `src/services/*.ts` for the integration placeholders marking where each would hit a real endpoint.
+- `server/` -- the API: real auth, business-profile persistence, and a generic OAuth integration registry (`server/README.md` has details, including how to add a new provider).
+
+## Tech
+
+React 19, TypeScript, Vite, React Router, Zustand. API: Express, `node:sqlite`, JWT auth, AES-256-GCM token encryption at rest.

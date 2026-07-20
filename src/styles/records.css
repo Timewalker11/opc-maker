@@ -3,6 +3,42 @@
   flex-direction: column;
 }
 
+.record-row__subtitle--error {
+  color: var(--status-critical);
+  margin-top: 4px;
+}
+
+.integration-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  margin-bottom: var(--space-4);
+}
+
+.integration-banner button {
+  margin-left: auto;
+  font-size: 1rem;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.integration-banner button:hover {
+  opacity: 1;
+}
+
+.integration-banner--good {
+  background: var(--status-good-soft);
+  color: var(--status-good);
+}
+
+.integration-banner--critical {
+  background: var(--status-critical-soft);
+  color: var(--status-critical);
+}
+
 .record-row {
   display: flex;
   align-items: center;

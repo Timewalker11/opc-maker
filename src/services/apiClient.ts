@@ -1,9 +1,31 @@
+import { API_BASE_URL } from "../config";
+import { authHeaders } from "./authToken";
+
 export class ApiError extends Error {
   status: number;
   constructor(message: string, status = 500) {
     super(message);
     this.status = status;
   }
+}
+
+// The real HTTP path -- used by services backed by the actual server (auth, business profile,
+// integrations). Domains still on mock data use mockRequest/mockFailure below instead.
+export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+      ...options.headers,
+    },
+  });
+
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new ApiError(body.error ?? "Something went wrong.", res.status);
+  }
+  return body as T;
 }
 
 interface MockOptions {

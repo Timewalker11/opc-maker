@@ -13,6 +13,17 @@ export interface BusinessProfile {
   ownerName: string;
 }
 
+// A real, backend-registered OAuth integration -- distinct from the mock `Integration` type
+// below, which only feeds the illustrative global-search index.
+export interface IntegrationInfo {
+  id: string;
+  name: string;
+  category: string;
+  configured: boolean;
+  connected: boolean;
+  connectedAt: string | null;
+}
+
 export type Priority = "low" | "medium" | "high";
 export type Severity = "info" | "warning" | "serious" | "critical";
 export type SocialPlatform = "instagram" | "facebook" | "linkedin" | "tiktok";

@@ -18,6 +18,8 @@ export function Onboarding() {
   const [ownerName, setOwnerName] = useState(user?.name ?? "");
   const [referralSource, setReferralSource] = useState<ReferralSource>("search");
   const [touched, setTouched] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const step1Valid = companyName.trim().length > 0;
   const step2Valid = ownerName.trim().length > 0;
@@ -30,12 +32,24 @@ export function Onboarding() {
     setStep(1);
   }
 
-  function handleFinish(e: React.FormEvent) {
+  async function handleFinish(e: React.FormEvent) {
     e.preventDefault();
     setTouched(true);
     if (!step2Valid) return;
-    setProfile({ companyName: companyName.trim(), businessType, ownerName: ownerName.trim(), referralSource });
-    navigate("/", { replace: true });
+    setSubmitting(true);
+    setSubmitError(null);
+    const ok = await setProfile({
+      companyName: companyName.trim(),
+      businessType,
+      ownerName: ownerName.trim(),
+      referralSource,
+    });
+    setSubmitting(false);
+    if (ok) {
+      navigate("/", { replace: true });
+    } else {
+      setSubmitError("Couldn't save your business profile. Please try again.");
+    }
   }
 
   return (
@@ -96,12 +110,13 @@ export function Onboarding() {
               ))}
             </select>
           </div>
+          {submitError && <p className="auth-form__error">{submitError}</p>}
           <div className="auth-wizard__row">
-            <Button variant="secondary" type="button" onClick={() => setStep(0)}>
+            <Button variant="secondary" type="button" onClick={() => setStep(0)} disabled={submitting}>
               Back
             </Button>
-            <Button variant="primary" type="submit">
-              Finish setup
+            <Button variant="primary" type="submit" disabled={submitting}>
+              {submitting ? "Saving…" : "Finish setup"}
             </Button>
           </div>
         </form>
