@@ -1,0 +1,49 @@
+.tasks-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.tasks-card__counts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+}
+
+.tasks-card__count strong {
+  font-size: 1.05rem;
+}
+
+.tasks-card__all-done {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.tasks-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.tasks-card__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.tasks-card__checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  font-size: 0.82rem;
+}
+
+.tasks-card__checkbox-row input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--text-primary);
+  flex-shrink: 0;
+}

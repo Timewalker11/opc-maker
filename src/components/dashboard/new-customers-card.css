@@ -1,0 +1,17 @@
+.new-customers-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.new-customers-card__figure {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.new-customers-card__source {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}

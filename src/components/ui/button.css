@@ -1,0 +1,77 @@
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.12s var(--ease), border-color 0.12s var(--ease), color 0.12s var(--ease);
+}
+
+.ui-btn--md {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+.ui-btn--sm {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.78rem;
+}
+
+.ui-btn--icon-only.ui-btn--md {
+  padding: 0.5rem;
+}
+
+.ui-btn--icon-only.ui-btn--sm {
+  padding: 0.35rem;
+}
+
+.ui-btn--primary {
+  background: var(--text-primary);
+  color: var(--surface);
+}
+
+.ui-btn--primary:hover {
+  background: var(--text-secondary);
+}
+
+.ui-btn--secondary {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.ui-btn--secondary:hover {
+  background: var(--surface-sunken);
+}
+
+.ui-btn--ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.ui-btn--ghost:hover {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+
+.ui-btn--danger {
+  background: var(--status-critical-soft);
+  color: var(--status-critical);
+}
+
+.ui-btn--danger:hover {
+  background: var(--status-critical);
+  color: #fff;
+}
+
+.ui-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-btn__icon {
+  display: inline-flex;
+}

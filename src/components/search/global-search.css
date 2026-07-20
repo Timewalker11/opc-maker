@@ -1,0 +1,124 @@
+.global-search {
+  display: flex;
+  flex-direction: column;
+  max-height: 76vh;
+}
+
+.global-search__input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.global-search__input {
+  flex: 1;
+  background: none;
+  border: none;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.global-search__input::placeholder {
+  color: var(--text-muted);
+}
+
+.global-search__close {
+  display: flex;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+.global-search__close:hover {
+  background: var(--surface-sunken);
+}
+
+.global-search__body {
+  overflow-y: auto;
+  padding: var(--space-3);
+}
+
+.global-search__status {
+  padding: var(--space-3);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.global-search__examples {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-2);
+}
+
+.global-search__examples-heading {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: var(--space-2);
+}
+
+.global-search__example {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.55rem var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: left;
+}
+
+.global-search__example:hover {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+
+.global-search__group {
+  padding: var(--space-2) var(--space-2) var(--space-3);
+}
+
+.global-search__group-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: var(--space-1) var(--space-2) var(--space-2);
+}
+
+.global-search__result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 0.55rem var(--space-3);
+  border-radius: var(--radius-sm);
+  text-align: left;
+}
+
+.global-search__result:hover {
+  background: var(--surface-sunken);
+}
+
+.global-search__result-title {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  max-width: 60%;
+}
+
+.global-search__result-meta {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  text-align: right;
+}

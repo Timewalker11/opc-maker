@@ -1,0 +1,41 @@
+.storage-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.storage-card__usage-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.83rem;
+  font-weight: 600;
+}
+
+.storage-card__total {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.storage-card__recent {
+  margin-top: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.storage-card__recent-heading {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: var(--space-2);
+}
+
+.storage-card__file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 3px 0;
+}

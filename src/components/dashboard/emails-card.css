@@ -1,0 +1,60 @@
+.emails-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.emails-card__counts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.85rem;
+}
+
+.emails-card__counts strong {
+  font-size: 1.05rem;
+}
+
+.emails-card__none {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.emails-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.emails-card__item {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-2);
+}
+
+.emails-card__item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.emails-card__item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: 0.78rem;
+}
+
+.emails-card__sender {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.emails-card__time {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.emails-card__subject {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 2px 0 4px;
+}

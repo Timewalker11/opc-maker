@@ -1,0 +1,65 @@
+.greeting-header {
+  margin-bottom: var(--space-6);
+}
+
+.greeting-header__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.greeting-header__greeting {
+  font-size: 1.5rem;
+}
+
+.greeting-header__date {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+
+.greeting-header__celebration {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  color: var(--status-good);
+  font-size: 0.9rem;
+}
+
+.greeting-header__priorities {
+  margin-top: var(--space-3);
+  max-width: 560px;
+}
+
+.greeting-header__priorities-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 6px;
+}
+
+.greeting-header__priorities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.greeting-header__priorities-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.greeting-header__priorities-list li span {
+  min-width: 0;
+}

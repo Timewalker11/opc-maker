@@ -1,0 +1,21 @@
+.ui-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  min-width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 120;
+  padding: var(--space-2);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.ui-popover--right {
+  right: 0;
+}
+
+.ui-popover--left {
+  left: 0;
+}

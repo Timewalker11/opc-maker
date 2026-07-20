@@ -1,0 +1,41 @@
+.calendar-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.calendar-card__item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.calendar-card__time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
+  width: 64px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.calendar-card__day {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.calendar-card__body {
+  min-width: 0;
+}
+
+.calendar-card__title {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.calendar-card__related {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}

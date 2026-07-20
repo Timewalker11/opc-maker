@@ -1,0 +1,106 @@
+.record-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--border);
+}
+
+.record-row:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.record-row__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.record-row__title {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.record-row__checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.record-row__checkbox-row input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.record-row__title--done {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.record-row__title-secondary {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.record-row__subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.record-row__end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.record-row__amount {
+  font-size: 0.87rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.storage-usage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.analytics-revenue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.analytics-revenue__figure {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-5);
+  align-items: start;
+}

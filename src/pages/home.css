@@ -1,0 +1,13 @@
+.home-page__lower {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .home-page__lower {
+    grid-template-columns: 1fr;
+  }
+}

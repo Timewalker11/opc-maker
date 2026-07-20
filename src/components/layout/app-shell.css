@@ -1,0 +1,48 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-shell__main-col {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.15s var(--ease);
+}
+
+.app-shell__content-row {
+  display: flex;
+  height: calc(100vh - var(--topbar-height));
+}
+
+.app-shell__main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+.app-shell__main:focus-visible {
+  outline: none;
+}
+
+body:has(.sidebar--collapsed) .app-shell__main-col {
+  margin-left: var(--sidebar-width-collapsed);
+}
+
+@media (max-width: 768px) {
+  .app-shell__main-col {
+    margin-left: 0;
+  }
+
+  body:has(.sidebar--collapsed) .app-shell__main-col {
+    margin-left: 0;
+  }
+
+  .app-shell__main {
+    padding: var(--space-4);
+  }
+}

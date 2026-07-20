@@ -1,0 +1,125 @@
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.dashboard-toolbar__title {
+  font-size: 1rem;
+}
+
+.dashboard-toolbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.dashboard-toolbar__hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.dashboard-toolbar__empty-menu {
+  padding: var(--space-3);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.dashboard-grid__item {
+  grid-column: span 1;
+  position: relative;
+  min-width: 0;
+}
+
+.dashboard-grid__item--lg {
+  grid-column: span 2;
+}
+
+.dashboard-grid__item-body {
+  height: 100%;
+}
+
+.dashboard-grid__item--dragging {
+  opacity: 0.5;
+  z-index: 10;
+}
+
+.dashboard-grid__item--customizing .dashboard-grid__item-body {
+  pointer-events: none;
+  border-radius: var(--radius-lg);
+  outline: 1px dashed var(--border-strong);
+  outline-offset: 4px;
+}
+
+.card-customize-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.card-customize-bar__handle {
+  display: flex;
+  padding: 5px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  cursor: grab;
+}
+
+.card-customize-bar__sizes {
+  display: flex;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.card-customize-bar__sizes button {
+  padding: 5px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--surface);
+}
+
+.card-customize-bar__sizes button.is-active {
+  background: var(--text-primary);
+  color: var(--surface);
+}
+
+.card-customize-bar__remove {
+  margin-left: auto;
+  display: flex;
+  padding: 5px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  color: var(--status-critical);
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-grid__item--lg {
+    grid-column: span 1;
+  }
+}
