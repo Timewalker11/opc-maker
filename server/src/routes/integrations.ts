@@ -57,10 +57,10 @@ router.get("/callback", async (req, res) => {
   const { code, state, error } = req.query;
 
   if (error) {
-    return res.redirect(`${env.frontendUrl}/integrations?error=${encodeURIComponent(String(error))}`);
+    return res.redirect(`${env.frontendUrl}/settings?error=${encodeURIComponent(String(error))}#integrations`);
   }
   if (typeof code !== "string" || typeof state !== "string") {
-    return res.redirect(`${env.frontendUrl}/integrations?error=missing_code_or_state`);
+    return res.redirect(`${env.frontendUrl}/settings?error=missing_code_or_state#integrations`);
   }
 
   const stateRow = db.prepare("SELECT * FROM oauth_states WHERE state = ?").get(state) as
@@ -69,12 +69,12 @@ router.get("/callback", async (req, res) => {
   db.prepare("DELETE FROM oauth_states WHERE state = ?").run(state);
 
   if (!stateRow) {
-    return res.redirect(`${env.frontendUrl}/integrations?error=invalid_or_expired_state`);
+    return res.redirect(`${env.frontendUrl}/settings?error=invalid_or_expired_state#integrations`);
   }
 
   const provider = findProvider(stateRow.provider);
   if (!provider) {
-    return res.redirect(`${env.frontendUrl}/integrations?error=unknown_provider`);
+    return res.redirect(`${env.frontendUrl}/settings?error=unknown_provider#integrations`);
   }
 
   try {
@@ -101,10 +101,10 @@ router.get("/callback", async (req, res) => {
       provider.scopes.join(" "),
     );
 
-    res.redirect(`${env.frontendUrl}/integrations?connected=${provider.id}`);
+    res.redirect(`${env.frontendUrl}/settings?connected=${provider.id}#integrations`);
   } catch (err) {
     console.error("OAuth token exchange failed:", err);
-    res.redirect(`${env.frontendUrl}/integrations?error=token_exchange_failed`);
+    res.redirect(`${env.frontendUrl}/settings?error=token_exchange_failed#integrations`);
   }
 });
 

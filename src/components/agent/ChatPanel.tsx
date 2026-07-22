@@ -3,40 +3,48 @@ import { Icon } from "../ui/Icon";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { EmptyState } from "../ui/EmptyState";
-import type { ChatId } from "../../store/agentStore";
+import type { AgentChatMessage } from "../../types";
+import type { AgentChatSession, ChatId } from "../../store/agentStore";
 import { useAgentStore } from "../../store/agentStore";
 import { useDemoStateStore } from "../../store/demoStateStore";
-import { suggestedCommands, specializedAgentSuggestions } from "../../mock/commands";
+import { specializedAgentSuggestions } from "../../mock/commands";
 import { findAgent } from "../../mock/agents";
 import { AgentMessageBubble } from "./AgentMessageBubble";
 import { formatRelativeTime } from "../../utils/format";
 
-type Tab = "chat" | "activity";
+type Tab = "chat" | "activity" | "history";
 
 interface ChatPanelProps {
   chatId: ChatId;
   onClose: () => void;
 }
 
+// Stable references so these selectors don't hand React a brand-new empty array on every call
+// when there's nothing stored yet -- returning a fresh `[]` each time makes useSyncExternalStore
+// think the snapshot changed on every render, which is an infinite render loop.
+const EMPTY_MESSAGES: AgentChatMessage[] = [];
+const EMPTY_HISTORY: AgentChatSession[] = [];
+
 export function ChatPanel({ chatId, onClose }: ChatPanelProps) {
   const status = useAgentStore((s) => s.statusByChat[chatId] ?? "online");
-  const messages = useAgentStore((s) => s.messagesByChat[chatId] ?? []);
+  const messages = useAgentStore((s) => s.messagesByChat[chatId] ?? EMPTY_MESSAGES);
+  const history = useAgentStore((s) => s.historyByChat[chatId] ?? EMPTY_HISTORY);
   const activityLog = useAgentStore((s) => s.activityLog);
   const sendMessage = useAgentStore((s) => s.sendMessage);
   const respondToApproval = useAgentStore((s) => s.respondToApproval);
   const undoActivity = useAgentStore((s) => s.undoActivity);
+  const startNewChat = useAgentStore((s) => s.startNewChat);
+  const restoreSession = useAgentStore((s) => s.restoreSession);
   const setAgentUnavailable = useDemoStateStore((s) => s.setAgentUnavailable);
 
   const [tab, setTab] = useState<Tab>("chat");
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const agent = chatId === "dashboard" ? null : findAgent(chatId);
-  const title = agent ? agent.name : "Dashboard agent";
+  const agent = findAgent(chatId);
+  const title = agent ? agent.name : "Agent";
   const icon = agent ? agent.icon : "bot";
-  const suggestions = agent
-    ? specializedAgentSuggestions[agent.id].map((label, i) => ({ id: `${agent.id}_${i}`, label }))
-    : suggestedCommands.slice(0, 4);
+  const suggestions = agent ? specializedAgentSuggestions[agent.id].map((label, i) => ({ id: `${agent.id}_${i}`, label })) : [];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -66,9 +74,22 @@ export function ChatPanel({ chatId, onClose }: ChatPanelProps) {
           <span>{title}</span>
           <AgentStatusBadge status={status} />
         </div>
-        <button className="agent-panel__collapse" onClick={onClose} aria-label="Collapse agent panel">
-          <Icon name="chevron-right" size={16} />
-        </button>
+        <div className="agent-panel__header-actions">
+          <button
+            className="agent-panel__collapse"
+            onClick={() => {
+              startNewChat(chatId);
+              setTab("chat");
+            }}
+            aria-label="Start a new chat"
+            title="Start a new chat"
+          >
+            <Icon name="plus" size={16} />
+          </button>
+          <button className="agent-panel__collapse" onClick={onClose} aria-label="Collapse agent panel">
+            <Icon name="chevron-right" size={16} />
+          </button>
+        </div>
       </div>
 
       <div className="agent-panel__tabs" role="tablist" aria-label="Agent panel sections">
@@ -84,6 +105,14 @@ export function ChatPanel({ chatId, onClose }: ChatPanelProps) {
           Activity log
           {pendingApprovals.length > 0 && <span className="agent-panel__tab-dot" aria-hidden="true" />}
         </button>
+        <button
+          role="tab"
+          aria-selected={tab === "history"}
+          className={tab === "history" ? "is-active" : ""}
+          onClick={() => setTab("history")}
+        >
+          History
+        </button>
       </div>
 
       {tab === "chat" && (
@@ -93,7 +122,7 @@ export function ChatPanel({ chatId, onClose }: ChatPanelProps) {
               <AgentMessageBubble
                 key={m.id}
                 message={m}
-                onRespondToApproval={(messageId, agentId, approve) => respondToApproval(chatId, messageId, agentId, approve)}
+                onRespondToApproval={(messageId, routingIndex, approve) => respondToApproval(chatId, messageId, routingIndex, approve)}
               />
             ))}
 
@@ -167,6 +196,33 @@ export function ChatPanel({ chatId, onClose }: ChatPanelProps) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {tab === "history" && (
+        <div className="agent-panel__scroll thin-scroll">
+          {history.length === 0 && (
+            <EmptyState icon="clock" title="No past chats yet" description="Start a new chat to archive this conversation here." compact />
+          )}
+          {history.map((session) => {
+            const preview = session.messages.find((m) => m.role === "user")?.content ?? "New chat";
+            return (
+              <button
+                key={session.id}
+                className="agent-history-item"
+                onClick={() => {
+                  restoreSession(chatId, session.id);
+                  setTab("chat");
+                }}
+              >
+                <p className="agent-history-item__title truncate">{preview}</p>
+                <div className="agent-history-item__meta">
+                  <span>{formatRelativeTime(session.endedAt)}</span>
+                  <span>{session.messages.length} messages</span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       )}
     </aside>

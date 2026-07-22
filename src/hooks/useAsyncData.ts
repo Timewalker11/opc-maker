@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 type AsyncState<T> =
-  | { status: "loading"; data?: undefined }
-  | { status: "ready"; data: T }
-  | { status: "error"; data?: undefined };
+  | { status: "loading"; data?: undefined; error?: undefined }
+  | { status: "ready"; data: T; error?: undefined }
+  | { status: "error"; data?: undefined; error?: string };
 
 export function useAsyncData<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
   const [reloadKey, setReloadKey] = useState(0);
@@ -16,8 +16,8 @@ export function useAsyncData<T>(fetcher: () => Promise<T>, deps: unknown[] = [])
       .then((data) => {
         if (!cancelled) setState({ status: "ready", data });
       })
-      .catch(() => {
-        if (!cancelled) setState({ status: "error" });
+      .catch((err) => {
+        if (!cancelled) setState({ status: "error", error: err instanceof Error ? err.message : undefined });
       });
     return () => {
       cancelled = true;

@@ -6,7 +6,7 @@ import { findAgent } from "../../mock/agents";
 
 interface AgentRoutingCardProps {
   routing: AgentRouting;
-  onRespond: (agentId: AgentRouting["agentId"], approve: boolean) => void;
+  onRespond: (approve: boolean) => void;
 }
 
 export function AgentRoutingCard({ routing, onRespond }: AgentRoutingCardProps) {
@@ -23,10 +23,10 @@ export function AgentRoutingCard({ routing, onRespond }: AgentRoutingCardProps) 
       <p className="agent-routing-card__access">Access: {routing.dataAccess.join(", ")}</p>
       {routing.status === "needs-approval" && (
         <div className="agent-routing-card__buttons">
-          <Button size="sm" variant="primary" onClick={() => onRespond(routing.agentId, true)}>
+          <Button size="sm" variant="primary" onClick={() => onRespond(true)}>
             Approve
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => onRespond(routing.agentId, false)}>
+          <Button size="sm" variant="ghost" onClick={() => onRespond(false)}>
             Deny
           </Button>
         </div>

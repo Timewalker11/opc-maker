@@ -28,17 +28,6 @@ export function AgentPanel() {
       {open && <ChatPanel chatId={activeChatId} onClose={() => setAgentPanelOpen(false)} />}
 
       <div className="agent-rail">
-        <button
-          className={`agent-rail__btn ${open && activeChatId === "dashboard" ? "is-active" : ""}`}
-          onClick={() => handleSelect("dashboard")}
-          aria-label="Dashboard agent"
-          title="Dashboard agent -- coordinates the whole team"
-        >
-          <Icon name="bot" size={19} />
-        </button>
-
-        {chatAgents.length > 0 && <div className="agent-rail__divider" aria-hidden="true" />}
-
         {chatAgents.map((agent) => (
           <button
             key={agent.id}

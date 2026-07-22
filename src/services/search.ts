@@ -39,7 +39,7 @@ function buildIndex(): SearchResult[] {
       category: "tasks",
       title: t.title,
       meta: isOverdue(t) ? "Overdue" : `Due ${new Date(t.dueAt).toLocaleDateString()}`,
-      href: "/work",
+      href: "/tasks",
     });
   }
   for (const ev of calendarEvents) {
@@ -48,7 +48,7 @@ function buildIndex(): SearchResult[] {
       category: "events",
       title: ev.title,
       meta: new Date(ev.startAt).toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" }),
-      href: "/work",
+      href: "/tasks",
     });
   }
   for (const f of files) {
@@ -120,7 +120,7 @@ function buildIndex(): SearchResult[] {
       category: "integrations",
       title: i.name,
       meta: `${i.category} · ${i.status}`,
-      href: "/integrations",
+      href: "/settings#integrations",
     });
   }
 

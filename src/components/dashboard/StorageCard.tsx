@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "../ui/Card";
 import { Icon } from "../ui/Icon";
@@ -7,10 +8,12 @@ import { ProgressBar } from "../ui/ProgressBar";
 import { CardSkeleton } from "../ui/Skeleton";
 import { ErrorState } from "../ui/ErrorState";
 import { EmptyState } from "../ui/EmptyState";
-import { useDashboardData } from "../../hooks/useDashboardData";
-import { fetchStorageUsage, fetchRecentFiles } from "../../services/files";
-import { formatBytes } from "../../utils/format";
+import { Modal } from "../ui/Modal";
+import { ClickableRegion } from "../ui/ClickableRegion";
+import { useFilesStore } from "../../store/filesStore";
+import { formatBytes, formatRelativeTime } from "../../utils/format";
 import "./storage-card.css";
+import "./card-detail.css";
 
 const KIND_ICON: Record<string, IconName> = {
   image: "image",
@@ -20,14 +23,22 @@ const KIND_ICON: Record<string, IconName> = {
 };
 
 export function StorageCard() {
-  const usage = useDashboardData(fetchStorageUsage);
-  const recentFiles = useDashboardData(fetchRecentFiles);
-  const loading = usage.status === "loading" || recentFiles.status === "loading";
-  const hasError = usage.status === "error" || recentFiles.status === "error";
-  const hasFiles = !!recentFiles.data && recentFiles.data.length > 0;
+  const status = useFilesStore((s) => s.status);
+  const recentFiles = useFilesStore((s) => s.items);
+  const storageUsedBytes = useFilesStore((s) => s.storageUsedBytes);
+  const storageTotalBytes = useFilesStore((s) => s.storageTotalBytes);
+  const load = useFilesStore((s) => s.load);
+  const loading = status === "loading";
+  const hasError = status === "error";
+  const hasFiles = recentFiles.length > 0;
 
-  const pct = usage.data ? (usage.data.used / usage.data.total) * 100 : 0;
+  const pct = storageTotalBytes > 0 ? (storageUsedBytes / storageTotalBytes) * 100 : 0;
   const nearlyFull = pct >= 85;
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  useEffect(() => {
+    if (status === "idle") load();
+  }, [status, load]);
 
   return (
     <Card
@@ -40,37 +51,66 @@ export function StorageCard() {
       }
     >
       {loading && <CardSkeleton lines={3} />}
-      {hasError && <ErrorState compact onRetry={() => { usage.reload(); recentFiles.reload(); }} />}
+      {hasError && <ErrorState compact onRetry={load} />}
       {!loading && !hasError && !hasFiles && (
         <EmptyState icon="database" title="No files yet" description="Upload your first file to start using storage." compact />
       )}
-      {!loading && !hasError && hasFiles && usage.data && (
-        <div className="storage-card">
-          <div className="storage-card__usage-row">
-            <span>{formatBytes(usage.data.used)} used</span>
-            <span className="storage-card__total">of {formatBytes(usage.data.total)}</span>
-          </div>
-          <ProgressBar
-            value={usage.data.used}
-            max={usage.data.total}
-            tone={nearlyFull ? "warning" : "accent"}
-            label="Storage used"
-          />
-          {nearlyFull && <Badge tone="warning">Storage almost full</Badge>}
+      {!loading && !hasError && hasFiles && (
+        <ClickableRegion onClick={() => setDetailsOpen(true)} ariaLabel="View storage details">
+          <div className="storage-card">
+            <div className="storage-card__usage-row">
+              <span>{formatBytes(storageUsedBytes)} used</span>
+              <span className="storage-card__total">of {formatBytes(storageTotalBytes)}</span>
+            </div>
+            <ProgressBar value={storageUsedBytes} max={storageTotalBytes} tone={nearlyFull ? "warning" : "accent"} label="Storage used" />
+            {nearlyFull && <Badge tone="warning">Storage almost full</Badge>}
 
-          <div className="storage-card__recent">
-            <p className="storage-card__recent-heading">Recently uploaded</p>
-            <ul>
-              {recentFiles.data!.slice(0, 3).map((f) => (
-                <li key={f.id} className="storage-card__file">
-                  <Icon name={KIND_ICON[f.kind] ?? "folder"} size={14} />
-                  <span className="truncate">{f.name}</span>
+            <div className="storage-card__recent">
+              <p className="storage-card__recent-heading">Recently uploaded</p>
+              <ul>
+                {recentFiles.slice(0, 3).map((f) => (
+                  <li key={f.id} className="storage-card__file">
+                    <Icon name={KIND_ICON[f.kind] ?? "folder"} size={14} />
+                    <span className="truncate">{f.name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </ClickableRegion>
+      )}
+      <Modal open={detailsOpen} onClose={() => setDetailsOpen(false)} title="Storage details">
+        <div className="card-detail">
+          <div className="card-detail__stats">
+            <div className="card-detail__stat">
+              <span className="card-detail__stat-label">Used</span>
+              <span className="card-detail__stat-value">{formatBytes(storageUsedBytes)}</span>
+            </div>
+            <div className="card-detail__stat">
+              <span className="card-detail__stat-label">Total</span>
+              <span className="card-detail__stat-value">{formatBytes(storageTotalBytes)}</span>
+            </div>
+          </div>
+          <ProgressBar value={storageUsedBytes} max={storageTotalBytes} tone={nearlyFull ? "warning" : "accent"} label="Storage used" />
+          <p className="card-detail__heading">All recent files</p>
+          {recentFiles.length === 0 && <p className="card-detail__empty">No files uploaded yet.</p>}
+          {recentFiles.length > 0 && (
+            <ul className="card-detail__list">
+              {recentFiles.map((f) => (
+                <li key={f.id} className="card-detail__row">
+                  <Icon name={KIND_ICON[f.kind] ?? "folder"} size={16} />
+                  <div className="card-detail__row-body">
+                    <p className="card-detail__row-title truncate">{f.name}</p>
+                    <p className="card-detail__row-meta">
+                      {formatBytes(f.sizeBytes)} &middot; {formatRelativeTime(f.uploadedAt)}
+                    </p>
+                  </div>
                 </li>
               ))}
             </ul>
-          </div>
+          )}
         </div>
-      )}
+      </Modal>
     </Card>
   );
 }

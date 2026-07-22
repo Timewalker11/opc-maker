@@ -180,6 +180,7 @@ export interface EmailMessage {
   unread: boolean;
   urgent: boolean;
   needsResponse: boolean;
+  businessRelated: boolean;
 }
 
 export interface FileItem {
@@ -332,9 +333,18 @@ export interface SpecializedAgent {
   icon: IconName;
 }
 
+export type AgentActionName =
+  | "create_task"
+  | "complete_task"
+  | "schedule_social_post"
+  | "create_calendar_event"
+  | "resolve_alert";
+
 export interface AgentRouting {
   agentId: SpecializedAgentId;
   dataAccess: string[];
+  action?: AgentActionName;
+  args?: Record<string, unknown>;
   proposedAction: string;
   requiresApproval: boolean;
   status: "pending" | "running" | "needs-approval" | "success" | "failed";
@@ -403,7 +413,3 @@ export interface SearchResult {
   href: string;
 }
 
-export interface CommandSuggestion {
-  id: string;
-  label: string;
-}

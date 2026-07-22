@@ -5,15 +5,12 @@ import { useNotificationsStore, selectUnreadCount } from "../../store/notificati
 import { ProfileMenu } from "./ProfileMenu";
 import { NotificationCenter } from "../notifications/NotificationCenter";
 import { GlobalSearchModal } from "../search/GlobalSearchModal";
-import { CommandBarModal } from "../command/CommandBarModal";
 import "./topbar.css";
 
 export function Topbar() {
   const setMobileNavOpen = useUIStore((s) => s.setMobileNavOpen);
   const searchOpen = useUIStore((s) => s.searchOpen);
   const setSearchOpen = useUIStore((s) => s.setSearchOpen);
-  const commandOpen = useUIStore((s) => s.commandOpen);
-  const setCommandOpen = useUIStore((s) => s.setCommandOpen);
   const notificationsOpen = useUIStore((s) => s.notificationsOpen);
   const setNotificationsOpen = useUIStore((s) => s.setNotificationsOpen);
   const notificationItems = useNotificationsStore((s) => s.items);
@@ -35,12 +32,6 @@ export function Topbar() {
         <Icon name="search" size={16} />
         <span className="topbar__search-label">Search customers, emails, invoices…</span>
         <kbd className="topbar__kbd">/</kbd>
-      </button>
-
-      <button className="topbar__command" onClick={() => setCommandOpen(true)} aria-haspopup="dialog">
-        <Icon name="sparkles" size={16} />
-        <span className="topbar__search-label">Ask the dashboard agent…</span>
-        <kbd className="topbar__kbd">⌘K</kbd>
       </button>
 
       <div className="topbar__actions">
@@ -65,7 +56,6 @@ export function Topbar() {
       </div>
 
       <GlobalSearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
-      <CommandBarModal open={commandOpen} onClose={() => setCommandOpen(false)} />
     </header>
   );
 }

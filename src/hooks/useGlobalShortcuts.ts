@@ -9,15 +9,9 @@ function isTypingTarget(el: EventTarget | null) {
 
 export function useGlobalShortcuts() {
   const setSearchOpen = useUIStore((s) => s.setSearchOpen);
-  const setCommandOpen = useUIStore((s) => s.setCommandOpen);
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setCommandOpen(true);
-        return;
-      }
       if (e.key === "/" && !isTypingTarget(e.target)) {
         e.preventDefault();
         setSearchOpen(true);
@@ -25,5 +19,5 @@ export function useGlobalShortcuts() {
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [setSearchOpen, setCommandOpen]);
+  }, [setSearchOpen]);
 }

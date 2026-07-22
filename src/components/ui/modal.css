@@ -51,6 +51,15 @@
   color: var(--text-primary);
 }
 
+/* Opt-in scrollable body for modals whose content can exceed the modal's max-height --
+   the modal shell itself clips overflow, so content that might run long needs this. */
+.ui-modal__scroll-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5);
+}
+
 @media (max-width: 640px) {
   .ui-modal-overlay {
     padding: var(--space-3);

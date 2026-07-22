@@ -8,6 +8,7 @@ export { Skeleton, CardSkeleton } from "./Skeleton";
 export { EmptyState } from "./EmptyState";
 export { ErrorState } from "./ErrorState";
 export { Modal } from "./Modal";
+export { ClickableRegion } from "./ClickableRegion";
 export { Popover } from "./Popover";
 export { ErrorBoundary } from "./ErrorBoundary";
 export { Icon } from "./Icon";

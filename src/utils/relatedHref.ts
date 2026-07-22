@@ -3,11 +3,11 @@ import type { RelatedRecord } from "../types";
 const HREF_BY_TYPE: Record<RelatedRecord["type"], string> = {
   customer: "/customers",
   campaign: "/marketing",
-  task: "/work",
+  task: "/tasks",
   file: "/files",
   invoice: "/analytics",
   order: "/customers",
-  project: "/work",
+  project: "/tasks",
   email: "/communications",
 };
 

@@ -1,12 +1,12 @@
 import { useState } from "react";
-import type { AgentChatMessage, SpecializedAgentId } from "../../types";
+import type { AgentChatMessage } from "../../types";
 import { Icon } from "../ui/Icon";
 import { AgentRoutingCard } from "./AgentRoutingCard";
 import { formatRelativeTime } from "../../utils/format";
 
 interface AgentMessageBubbleProps {
   message: AgentChatMessage;
-  onRespondToApproval: (messageId: string, agentId: SpecializedAgentId, approve: boolean) => void;
+  onRespondToApproval: (messageId: string, routingIndex: number, approve: boolean) => void;
 }
 
 export function AgentMessageBubble({ message, onRespondToApproval }: AgentMessageBubbleProps) {
@@ -19,12 +19,8 @@ export function AgentMessageBubble({ message, onRespondToApproval }: AgentMessag
 
       {message.routing && message.routing.length > 0 && (
         <div className="agent-message__routing">
-          {message.routing.map((r) => (
-            <AgentRoutingCard
-              key={r.agentId}
-              routing={r}
-              onRespond={(agentId, approve) => onRespondToApproval(message.id, agentId, approve)}
-            />
+          {message.routing.map((r, i) => (
+            <AgentRoutingCard key={i} routing={r} onRespond={(approve) => onRespondToApproval(message.id, i, approve)} />
           ))}
         </div>
       )}

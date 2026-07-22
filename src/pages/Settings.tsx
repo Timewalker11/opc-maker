@@ -1,11 +1,17 @@
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { PageHeader } from "../components/layout/PageHeader";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { Icon } from "../components/ui/Icon";
+import { Modal } from "../components/ui/Modal";
 import { OnboardingChecklist } from "../components/onboarding/OnboardingChecklist";
+import { AgentsSection } from "../components/settings/AgentsSection";
+import { IntegrationsSection } from "../components/settings/IntegrationsSection";
 import { useDashboardLayoutStore } from "../store/dashboardLayoutStore";
 import { useDemoStateStore } from "../store/demoStateStore";
+import { seedDemoData } from "../utils/seedDemoData";
 import { useAuthStore } from "../store/authStore";
 import { useBusinessProfileStore } from "../store/businessProfileStore";
 import { usePlanStore } from "../store/planStore";
@@ -14,6 +20,7 @@ import { BUSINESS_TYPE_OPTIONS, MAX_STARTING_AGENTS as FREE_PLAN_AGENT_LIMIT } f
 import "./settings.css";
 
 export function Settings() {
+  const location = useLocation();
   const restoreDefaults = useDashboardLayoutStore((s) => s.restoreDefaults);
   const syncError = useDemoStateStore((s) => s.syncError);
   const setSyncError = useDemoStateStore((s) => s.setSyncError);
@@ -26,6 +33,22 @@ export function Settings() {
 
   const businessTypeLabel = BUSINESS_TYPE_OPTIONS.find((t) => t.value === profile?.businessType)?.label;
   const referralSourceLabel = REFERRAL_SOURCES.find((r) => r.value === profile?.referralSource)?.label;
+
+  const [integrationsOpen, setIntegrationsOpen] = useState(false);
+  const [agentsOpen, setAgentsOpen] = useState(false);
+  const [demoDataGenerated, setDemoDataGenerated] = useState(false);
+
+  function handleGenerateDemoData() {
+    seedDemoData();
+    setDemoDataGenerated(true);
+  }
+
+  // Deep links from elsewhere in the app (e.g. "Connect Gmail") point at /settings#integrations
+  // or /settings#agents -- open the matching popup instead of landing on the plain page.
+  useEffect(() => {
+    if (location.hash === "#integrations") setIntegrationsOpen(true);
+    if (location.hash === "#agents") setAgentsOpen(true);
+  }, [location.hash]);
 
   return (
     <div>
@@ -75,10 +98,51 @@ export function Settings() {
         <OnboardingChecklist />
       </div>
 
+      <Card
+        title="Integrations"
+        subtitle="Connect Gmail, Shopify, and other apps to your workspace."
+        className="section-spacing-top"
+      >
+        <Button variant="secondary" icon={<Icon name="plug" size={14} />} onClick={() => setIntegrationsOpen(true)}>
+          Manage integrations
+        </Button>
+      </Card>
+
+      <Card title="Agents" subtitle="Activate and chat with your specialized AI agents." className="section-spacing-top">
+        <Button variant="secondary" icon={<Icon name="bot" size={14} />} onClick={() => setAgentsOpen(true)}>
+          Manage agents
+        </Button>
+      </Card>
+
+      <Modal open={integrationsOpen} onClose={() => setIntegrationsOpen(false)} title="Integrations" size="lg">
+        <IntegrationsSection />
+      </Modal>
+
+      <Modal open={agentsOpen} onClose={() => setAgentsOpen(false)} title="Agents" size="lg">
+        <AgentsSection />
+      </Modal>
+
       <Card title="Dashboard layout" subtitle="Reset your Home dashboard back to its default cards, order, and sizes." className="section-spacing-top">
         <Button variant="secondary" icon={<Icon name="undo" size={14} />} onClick={restoreDefaults}>
           Restore default layout
         </Button>
+      </Card>
+
+      <Card
+        title="Demo data"
+        subtitle="Fill every dashboard card with realistic sample data -- safe to run more than once, it replaces rather than piles up."
+        className="section-spacing-top"
+      >
+        <div className="settings-toggle-row">
+          <Button variant="secondary" icon={<Icon name="sparkles" size={14} />} onClick={handleGenerateDemoData}>
+            Generate demo data
+          </Button>
+          {demoDataGenerated && (
+            <span className="settings-field__label">
+              <Icon name="check" size={13} /> Generated -- check your dashboard
+            </span>
+          )}
+        </div>
       </Card>
 
       <Card
@@ -94,8 +158,8 @@ export function Settings() {
             onChange={setSyncError}
           />
           <ToggleRow
-            label="Dashboard agent unavailable"
-            description="Simulate the agent being temporarily offline."
+            label="Agents unavailable"
+            description="Simulate the agents being temporarily offline."
             checked={agentUnavailable}
             onChange={setAgentUnavailable}
           />

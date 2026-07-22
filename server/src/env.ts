@@ -12,6 +12,8 @@ export const env = {
   databasePath: process.env.DATABASE_PATH ?? "./data.sqlite",
   jwtSecret: required("JWT_SECRET", "dev-secret-change-me"),
   tokenEncryptionKey: required("TOKEN_ENCRYPTION_KEY", "0".repeat(64)),
+  openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  openaiModel: process.env.OPENAI_MODEL || "gpt-5.1",
   providers: {
     shopify: {
       clientId: process.env.SHOPIFY_CLIENT_ID ?? "",

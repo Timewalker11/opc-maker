@@ -6,28 +6,32 @@ import { CardSkeleton } from "../components/ui/Skeleton";
 import { ErrorState } from "../components/ui/ErrorState";
 import { EmptyState } from "../components/ui/EmptyState";
 import { useTasksStore } from "../store/tasksStore";
-import { useDashboardData } from "../hooks/useDashboardData";
-import { fetchUpcomingEvents } from "../services/calendar";
+import { useCalendarStore } from "../store/calendarStore";
 import { isOverdue } from "../mock/tasks";
 import { formatDay, formatTime } from "../utils/format";
 
-export function Work() {
+export function Tasks() {
   const taskStatus = useTasksStore((s) => s.status);
   const tasks = useTasksStore((s) => s.items);
   const loadTasks = useTasksStore((s) => s.load);
   const toggleDone = useTasksStore((s) => s.toggleDone);
-  const events = useDashboardData(fetchUpcomingEvents);
+  const eventStatus = useCalendarStore((s) => s.status);
+  const eventList = useCalendarStore((s) => s.items);
+  const loadEvents = useCalendarStore((s) => s.load);
 
   useEffect(() => {
     if (taskStatus === "idle") loadTasks();
   }, [taskStatus, loadTasks]);
 
+  useEffect(() => {
+    if (eventStatus === "idle") loadEvents();
+  }, [eventStatus, loadEvents]);
+
   const taskList = tasks;
-  const eventList = events.data ?? [];
 
   return (
     <div>
-      <PageHeader title="Work" description="Tasks and appointments across your business." />
+      <PageHeader title="Tasks" description="Tasks and appointments across your business." />
       <div className="page-grid">
         <Card title={`Tasks (${taskList.filter((t) => !t.done).length} open)`}>
           {taskStatus === "loading" && <CardSkeleton lines={5} />}
@@ -52,12 +56,12 @@ export function Work() {
         </Card>
 
         <Card title="Calendar">
-          {events.status === "loading" && <CardSkeleton lines={4} />}
-          {events.status === "error" && <ErrorState onRetry={events.reload} />}
-          {events.status === "ready" && eventList.length === 0 && (
+          {eventStatus === "loading" && <CardSkeleton lines={4} />}
+          {eventStatus === "error" && <ErrorState onRetry={loadEvents} />}
+          {eventStatus === "ready" && eventList.length === 0 && (
             <EmptyState icon="calendar" title="Nothing scheduled" description="Connect your calendar to see appointments here." />
           )}
-          {events.status === "ready" && eventList.length > 0 && (
+          {eventStatus === "ready" && eventList.length > 0 && (
             <ul className="record-list">
               {eventList.map((ev) => (
                 <li key={ev.id} className="record-row">

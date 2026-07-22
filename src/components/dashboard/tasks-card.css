@@ -47,3 +47,8 @@
   accent-color: var(--text-primary);
   flex-shrink: 0;
 }
+
+.tasks-card__done-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}

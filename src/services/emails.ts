@@ -1,8 +1,14 @@
 import type { EmailMessage } from "../types";
-import { emails } from "../mock/emails";
-import { mockRequest } from "./apiClient";
+import { apiFetch } from "./apiClient";
 
-// Integration placeholder: GET /api/inbox (Gmail/Outlook connector)
-export function fetchEmails(): Promise<EmailMessage[]> {
-  return mockRequest(emails);
+export interface InboxResult {
+  emails: EmailMessage[];
+  connected: boolean;
+}
+
+// Backed by the real Gmail connection once one exists (server reads the actual inbox through
+// the stored OAuth token) -- returns an empty, disconnected inbox otherwise, so the UI can
+// tell "nothing connected yet" apart from "connected, inbox genuinely empty".
+export function fetchEmails(): Promise<InboxResult> {
+  return apiFetch<InboxResult>("/api/emails");
 }

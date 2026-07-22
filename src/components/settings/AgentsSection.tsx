@@ -1,24 +1,20 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { PageHeader } from "../components/layout/PageHeader";
-import { Card } from "../components/ui/Card";
-import { Badge } from "../components/ui/Badge";
-import { Icon } from "../components/ui/Icon";
-import { Button } from "../components/ui/Button";
-import { specializedAgents } from "../mock/agents";
-import { MAX_STARTING_AGENTS as FREE_PLAN_AGENT_LIMIT } from "../mock/onboardingWizard";
-import type { SpecializedAgentId } from "../types";
-import { useAgentStore } from "../store/agentStore";
-import { useDemoStateStore } from "../store/demoStateStore";
-import { useUIStore } from "../store/uiStore";
-import { useAgentSelectionStore, AGENT_LOCK_DAYS } from "../store/agentSelectionStore";
-import { usePlanStore } from "../store/planStore";
-import { formatRelativeTime } from "../utils/format";
+import { Card } from "../ui/Card";
+import { Badge } from "../ui/Badge";
+import { Icon } from "../ui/Icon";
+import { Button } from "../ui/Button";
+import { specializedAgents } from "../../mock/agents";
+import { MAX_STARTING_AGENTS as FREE_PLAN_AGENT_LIMIT } from "../../mock/onboardingWizard";
+import type { SpecializedAgentId } from "../../types";
+import { useAgentStore } from "../../store/agentStore";
+import { useUIStore } from "../../store/uiStore";
+import { useAgentSelectionStore, AGENT_LOCK_DAYS } from "../../store/agentSelectionStore";
+import { usePlanStore } from "../../store/planStore";
+import { formatRelativeTime } from "../../utils/format";
 
-export function Agents() {
-  const dashboardAgentStatus = useAgentStore((s) => s.statusByChat.dashboard ?? "online");
+export function AgentsSection() {
   const setActiveChatId = useAgentStore((s) => s.setActiveChatId);
-  const agentUnavailable = useDemoStateStore((s) => s.agentUnavailable);
   const setAgentPanelOpen = useUIStore((s) => s.setAgentPanelOpen);
   const activeAgentIds = useAgentSelectionStore((s) => s.activeAgentIds);
   const activate = useAgentSelectionStore((s) => s.activate);
@@ -45,36 +41,7 @@ export function Agents() {
   }
 
   return (
-    <div>
-      <PageHeader
-        title="Agents"
-        description="The dashboard agent coordinates a team of specialized agents, each scoped to one part of your business."
-        action={
-          <Button
-            variant="primary"
-            icon={<Icon name="bot" size={15} />}
-            onClick={() => {
-              setActiveChatId("dashboard");
-              setAgentPanelOpen(true);
-            }}
-          >
-            Open dashboard agent
-          </Button>
-        }
-      />
-
-      <Card
-        title="Dashboard agent"
-        subtitle="Central coordinator"
-        icon={<Icon name="bot" size={16} />}
-        headerAction={<Badge tone={agentUnavailable ? "critical" : dashboardAgentStatus === "thinking" ? "accent" : "good"}>{agentUnavailable ? "unavailable" : dashboardAgentStatus}</Badge>}
-      >
-        <p className="record-row__subtitle">
-          Summarizes daily activity, identifies what needs attention, and routes requests to the specialized agents below --
-          combining their results and asking for your approval before anything sensitive happens.
-        </p>
-      </Card>
-
+    <div className="ui-modal__scroll-body thin-scroll">
       <Card
         title="Your AI team"
         subtitle={
@@ -83,7 +50,6 @@ export function Agents() {
             : `Free plan -- up to ${FREE_PLAN_AGENT_LIMIT} active agents`
         }
         headerAction={<Badge tone={plan === "premium" ? "accent" : "neutral"}>{plan === "premium" ? "Premium" : "Free plan"}</Badge>}
-        className="section-spacing-top"
       >
         {activeAgents.length === 0 ? (
           <p className="record-row__subtitle">No agents activated yet. Turn one on below to get started.</p>

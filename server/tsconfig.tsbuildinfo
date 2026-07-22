@@ -1,0 +1,1 @@
+{"root":["./src/authutils.ts","./src/crypto.ts","./src/db.ts","./src/env.ts","./src/index.ts","./src/integrations/gmail.ts","./src/integrations/oauth.ts","./src/integrations/registry.ts","./src/middleware/requireauth.ts","./src/routes/auth.ts","./src/routes/businessprofile.ts","./src/routes/chat.ts","./src/routes/emails.ts","./src/routes/integrations.ts"],"version":"5.9.3"}

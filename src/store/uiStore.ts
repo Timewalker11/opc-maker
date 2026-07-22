@@ -11,8 +11,6 @@ interface UIState {
   setAgentPanelOpen: (v: boolean) => void;
   searchOpen: boolean;
   setSearchOpen: (v: boolean) => void;
-  commandOpen: boolean;
-  setCommandOpen: (v: boolean) => void;
   notificationsOpen: boolean;
   setNotificationsOpen: (v: boolean) => void;
 }
@@ -29,8 +27,6 @@ export const useUIStore = create<UIState>()(
       setAgentPanelOpen: (v) => set({ agentPanelOpen: v }),
       searchOpen: false,
       setSearchOpen: (v) => set({ searchOpen: v }),
-      commandOpen: false,
-      setCommandOpen: (v) => set({ commandOpen: v }),
       notificationsOpen: false,
       setNotificationsOpen: (v) => set({ notificationsOpen: v }),
     }),

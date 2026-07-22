@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { PageHeader } from "../components/layout/PageHeader";
 import { Card } from "../components/ui/Card";
 import { Icon } from "../components/ui/Icon";
@@ -7,43 +8,48 @@ import { ProgressBar } from "../components/ui/ProgressBar";
 import { CardSkeleton } from "../components/ui/Skeleton";
 import { ErrorState } from "../components/ui/ErrorState";
 import { EmptyState } from "../components/ui/EmptyState";
-import { useDashboardData } from "../hooks/useDashboardData";
-import { fetchRecentFiles, fetchStorageUsage } from "../services/files";
+import { useFilesStore } from "../store/filesStore";
 import { formatBytes, formatRelativeTime } from "../utils/format";
 
 const KIND_ICON: Record<string, IconName> = { image: "image", document: "folder", spreadsheet: "bar-chart", media: "image" };
 
 export function Files() {
-  const usage = useDashboardData(fetchStorageUsage);
-  const files = useDashboardData(fetchRecentFiles);
-  const fileList = files.data ?? [];
-  const pctUsed = usage.data ? (usage.data.used / usage.data.total) * 100 : 0;
+  const status = useFilesStore((s) => s.status);
+  const fileList = useFilesStore((s) => s.items);
+  const storageUsedBytes = useFilesStore((s) => s.storageUsedBytes);
+  const storageTotalBytes = useFilesStore((s) => s.storageTotalBytes);
+  const load = useFilesStore((s) => s.load);
+  const pctUsed = storageTotalBytes > 0 ? (storageUsedBytes / storageTotalBytes) * 100 : 0;
+
+  useEffect(() => {
+    if (status === "idle") load();
+  }, [status, load]);
 
   return (
     <div>
       <PageHeader title="Files" description="Everything you've uploaded, in one place." />
       <div className="page-grid">
         <Card title="Storage usage">
-          {usage.status === "loading" && <CardSkeleton lines={2} />}
-          {usage.status === "error" && <ErrorState onRetry={usage.reload} />}
-          {usage.status === "ready" && usage.data && (
+          {status === "loading" && <CardSkeleton lines={2} />}
+          {status === "error" && <ErrorState onRetry={load} />}
+          {status === "ready" && (
             <div className="storage-usage">
               <p className="record-row__subtitle">
-                {formatBytes(usage.data.used)} of {formatBytes(usage.data.total)} used
+                {formatBytes(storageUsedBytes)} of {formatBytes(storageTotalBytes)} used
               </p>
-              <ProgressBar value={usage.data.used} max={usage.data.total} tone={pctUsed >= 85 ? "warning" : "accent"} label="Storage used" />
+              <ProgressBar value={storageUsedBytes} max={storageTotalBytes} tone={pctUsed >= 85 ? "warning" : "accent"} label="Storage used" />
               {pctUsed >= 85 && <Badge tone="warning">Storage almost full -- consider archiving older files</Badge>}
             </div>
           )}
         </Card>
 
         <Card title="Recent files">
-          {files.status === "loading" && <CardSkeleton lines={4} />}
-          {files.status === "error" && <ErrorState onRetry={files.reload} />}
-          {files.status === "ready" && fileList.length === 0 && (
+          {status === "loading" && <CardSkeleton lines={4} />}
+          {status === "error" && <ErrorState onRetry={load} />}
+          {status === "ready" && fileList.length === 0 && (
             <EmptyState icon="upload" title="No files yet" description="Upload your first file to start using storage." />
           )}
-          {files.status === "ready" && fileList.length > 0 && (
+          {status === "ready" && fileList.length > 0 && (
             <ul className="record-list">
               {fileList.map((f) => (
                 <li key={f.id} className="record-row">

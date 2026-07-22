@@ -9,11 +9,9 @@ import { Home } from "./pages/Home";
 import { Customers } from "./pages/Customers";
 import { Communications } from "./pages/Communications";
 import { Marketing } from "./pages/Marketing";
-import { Work } from "./pages/Work";
+import { Tasks } from "./pages/Tasks";
 import { Files } from "./pages/Files";
 import { Analytics } from "./pages/Analytics";
-import { Integrations } from "./pages/Integrations";
-import { Agents } from "./pages/Agents";
 import { Settings } from "./pages/Settings";
 
 function App() {
@@ -36,11 +34,9 @@ function App() {
               <Route path="customers" element={<Customers />} />
               <Route path="communications" element={<Communications />} />
               <Route path="marketing" element={<Marketing />} />
-              <Route path="work" element={<Work />} />
+              <Route path="tasks" element={<Tasks />} />
               <Route path="files" element={<Files />} />
               <Route path="analytics" element={<Analytics />} />
-              <Route path="integrations" element={<Integrations />} />
-              <Route path="agents" element={<Agents />} />
               <Route path="settings" element={<Settings />} />
             </Route>
           </Route>

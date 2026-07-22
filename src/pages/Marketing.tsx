@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { PostStatus } from "../types";
 import type { BadgeTone } from "../components/ui/Badge";
@@ -8,26 +9,39 @@ import { Icon } from "../components/ui/Icon";
 import { CardSkeleton } from "../components/ui/Skeleton";
 import { ErrorState } from "../components/ui/ErrorState";
 import { EmptyState } from "../components/ui/EmptyState";
-import { useDashboardData } from "../hooks/useDashboardData";
-import { fetchSocialPosts } from "../services/social";
-import { campaigns } from "../mock/campaigns";
+import { useSocialStore } from "../store/socialStore";
+import { useCampaignsStore } from "../store/campaignsStore";
 import { formatDay, formatTime } from "../utils/format";
 
 const STATUS_TONE: Record<PostStatus, BadgeTone> = { draft: "neutral", scheduled: "accent", published: "good" };
 
 export function Marketing() {
-  const posts = useDashboardData(fetchSocialPosts);
-  const socialPosts = posts.data ?? [];
-  const campaignList = campaigns;
+  const postsStatus = useSocialStore((s) => s.status);
+  const socialPosts = useSocialStore((s) => s.items);
+  const loadPosts = useSocialStore((s) => s.load);
+  const campaignsStatus = useCampaignsStore((s) => s.status);
+  const campaignList = useCampaignsStore((s) => s.items);
+  const loadCampaigns = useCampaignsStore((s) => s.load);
+
+  useEffect(() => {
+    if (postsStatus === "idle") loadPosts();
+  }, [postsStatus, loadPosts]);
+
+  useEffect(() => {
+    if (campaignsStatus === "idle") loadCampaigns();
+  }, [campaignsStatus, loadCampaigns]);
 
   return (
     <div>
       <PageHeader title="Marketing" description="Campaigns and social posts across every connected channel." />
       <div className="page-grid">
         <Card title="Campaigns">
-          {campaignList.length === 0 ? (
+          {campaignsStatus === "loading" && <CardSkeleton lines={4} />}
+          {campaignsStatus === "error" && <ErrorState onRetry={loadCampaigns} />}
+          {campaignsStatus === "ready" && campaignList.length === 0 && (
             <EmptyState icon="megaphone" title="No campaigns yet" description="Launch your first marketing campaign to see it here." />
-          ) : (
+          )}
+          {campaignsStatus === "ready" && campaignList.length > 0 && (
             <ul className="record-list">
               {campaignList.map((c) => (
                 <li key={c.id} className="record-row">
@@ -47,21 +61,21 @@ export function Marketing() {
         </Card>
 
         <Card title="Social calendar">
-          {posts.status === "loading" && <CardSkeleton lines={4} />}
-          {posts.status === "error" && <ErrorState onRetry={posts.reload} />}
-          {posts.status === "ready" && socialPosts.length === 0 && (
+          {postsStatus === "loading" && <CardSkeleton lines={4} />}
+          {postsStatus === "error" && <ErrorState onRetry={loadPosts} />}
+          {postsStatus === "ready" && socialPosts.length === 0 && (
             <EmptyState
               icon="megaphone"
               title="No posts scheduled"
               description="Add a social account to start scheduling posts."
               action={
-                <Link to="/integrations" className="card-link">
+                <Link to="/settings#integrations" className="card-link">
                   Add a social account
                 </Link>
               }
             />
           )}
-          {posts.status === "ready" && socialPosts.length > 0 && (
+          {postsStatus === "ready" && socialPosts.length > 0 && (
             <ul className="record-list">
               {socialPosts.map((p) => (
                 <li key={p.id} className="record-row">

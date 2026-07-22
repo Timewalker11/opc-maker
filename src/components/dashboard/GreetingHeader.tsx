@@ -72,7 +72,7 @@ export function GreetingHeader() {
               </li>
             ))}
           </ul>
-          <Link to="/work" className="card-link">
+          <Link to="/tasks" className="card-link">
             View all tasks <Icon name="chevron-right" size={12} />
           </Link>
         </div>

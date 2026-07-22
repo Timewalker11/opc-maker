@@ -33,7 +33,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-4);
-  align-items: stretch;
+  align-items: start;
 }
 
 .dashboard-grid__item {

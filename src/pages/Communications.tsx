@@ -8,26 +8,37 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { useDashboardData } from "../hooks/useDashboardData";
 import { fetchEmails } from "../services/emails";
 import { formatRelativeTime } from "../utils/format";
+import { needsAttention, sortByPriority } from "../utils/emailPriority";
 
 export function Communications() {
-  const { status, data, reload } = useDashboardData(fetchEmails);
-  const emails = data ?? [];
+  const { status, data, reload, error } = useDashboardData(fetchEmails);
+  const allEmails = data?.emails ?? [];
+  const connected = data?.connected ?? false;
+  const emails = sortByPriority(allEmails.filter(needsAttention));
 
   return (
     <div>
       <PageHeader title="Communications" description="Your unified inbox across connected email accounts." />
       <Card title="Inbox">
         {status === "loading" && <CardSkeleton lines={5} />}
-        {status === "error" && <ErrorState onRetry={reload} description="We couldn't load your inbox." />}
+        {status === "error" && <ErrorState onRetry={reload} description={error ?? "We couldn't load your inbox."} />}
         {status === "ready" && emails.length === 0 && (
           <EmptyState
             icon="mail"
-            title="No emails yet"
-            description="Connect Gmail or Outlook to see customer conversations here."
+            title={connected ? (allEmails.length === 0 ? "Inbox zero" : "All caught up") : "No emails yet"}
+            description={
+              connected
+                ? allEmails.length === 0
+                  ? "Nothing in your connected inbox right now."
+                  : "Everything in your inbox is read and doesn't need a response."
+                : "Connect Gmail or Outlook to see customer conversations here."
+            }
             action={
-              <Link to="/integrations" className="card-link">
-                Connect email
-              </Link>
+              connected ? undefined : (
+                <Link to="/settings#integrations" className="card-link">
+                  Connect email
+                </Link>
+              )
             }
           />
         )}
@@ -43,6 +54,7 @@ export function Communications() {
                   <div className="tag-row">
                     {e.unread && <Badge tone="accent">Unread</Badge>}
                     {e.urgent && <Badge tone="critical">Urgent</Badge>}
+                    {!e.urgent && e.businessRelated && <Badge tone="serious">Business</Badge>}
                     {e.needsResponse && <Badge tone="warning">Needs response</Badge>}
                   </div>
                 </div>
