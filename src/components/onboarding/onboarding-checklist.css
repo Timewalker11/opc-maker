@@ -2,14 +2,14 @@
   margin-bottom: var(--space-6);
 }
 
-.onboarding-checklist__dismiss {
+.onboarding-checklist__icon-btn {
   display: flex;
   padding: 4px;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
 }
 
-.onboarding-checklist__dismiss:hover {
+.onboarding-checklist__icon-btn:hover {
   background: var(--surface-sunken);
   color: var(--text-primary);
 }

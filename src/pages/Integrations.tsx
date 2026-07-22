@@ -11,10 +11,25 @@ import { useDashboardData } from "../hooks/useDashboardData";
 import { fetchIntegrations, connectIntegration, disconnectIntegration } from "../services/integrationsApi";
 import { ApiError } from "../services/apiClient";
 import { formatRelativeTime } from "../utils/format";
+import { useOnboardingWizardStore } from "../store/onboardingWizardStore";
+
+// Maps onboarding "which tools do you already use" answers to the provider ids in the
+// registry, so the app can point back at the tool the owner already told us they use.
+const TOOL_TO_PROVIDER: Record<string, string> = {
+  shopify: "shopify",
+  gmail: "google",
+  "google-calendar": "google",
+};
 
 export function Integrations() {
   const { status, data, reload } = useDashboardData(fetchIntegrations);
-  const integrations = data?.integrations ?? [];
+  const tools = useOnboardingWizardStore((s) => s.answers.tools);
+  const recommendedProviderIds = new Set(tools.map((t) => TOOL_TO_PROVIDER[t]).filter(Boolean));
+  const integrations = [...(data?.integrations ?? [])].sort((a, b) => {
+    const aRec = recommendedProviderIds.has(a.id) ? 1 : 0;
+    const bRec = recommendedProviderIds.has(b.id) ? 1 : 0;
+    return bRec - aRec;
+  });
   const [busyId, setBusyId] = useState<string | null>(null);
   const [rowError, setRowError] = useState<{ id: string; message: string } | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -63,7 +78,7 @@ export function Integrations() {
       <PageHeader title="Integrations" description="The apps connected to your business operating system." />
 
       {connectedBanner && (
-        <div className="integration-banner integration-banner--good">
+        <div className="inline-banner inline-banner--good">
           <Badge tone="good">Connected</Badge>
           <span>{connectedBanner} is now connected.</span>
           <button onClick={dismissBanner} aria-label="Dismiss">
@@ -72,7 +87,7 @@ export function Integrations() {
         </div>
       )}
       {errorBanner && (
-        <div className="integration-banner integration-banner--critical">
+        <div className="inline-banner inline-banner--critical">
           <Badge tone="critical">Failed</Badge>
           <span>Couldn't connect: {errorBanner.replace(/_/g, " ")}.</span>
           <button onClick={dismissBanner} aria-label="Dismiss">
@@ -101,6 +116,7 @@ export function Integrations() {
                   {rowError?.id === i.id && <p className="record-row__subtitle record-row__subtitle--error">{rowError.message}</p>}
                 </div>
                 <div className="record-row__end">
+                  {!i.connected && recommendedProviderIds.has(i.id) && <Badge tone="accent">Recommended for you</Badge>}
                   <Badge tone={i.connected ? "good" : i.configured ? "neutral" : "warning"}>
                     {i.connected ? "connected" : i.configured ? "not connected" : "unconfigured"}
                   </Badge>

@@ -16,6 +16,7 @@ export function CommandBarModal({ open, onClose }: CommandBarModalProps) {
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const sendMessage = useAgentStore((s) => s.sendMessage);
+  const setActiveChatId = useAgentStore((s) => s.setActiveChatId);
   const setAgentPanelOpen = useUIStore((s) => s.setAgentPanelOpen);
   const recent = useCommandHistoryStore((s) => s.recent);
   const record = useCommandHistoryStore((s) => s.record);
@@ -31,7 +32,8 @@ export function CommandBarModal({ open, onClose }: CommandBarModalProps) {
     const trimmed = text.trim();
     if (!trimmed) return;
     record(trimmed);
-    sendMessage(trimmed);
+    setActiveChatId("dashboard");
+    sendMessage("dashboard", trimmed);
     setAgentPanelOpen(true);
     onClose();
   }

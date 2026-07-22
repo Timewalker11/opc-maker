@@ -1,4 +1,22 @@
-export type BusinessType = "ecommerce" | "software" | "services" | "creative" | "retail" | "other";
+import type { IconName } from "../components/ui/Icon";
+
+export type BusinessType =
+  | "retail-ecommerce"
+  | "professional-services"
+  | "realtor"
+  | "consultant"
+  | "freelancer"
+  | "creator"
+  | "agency"
+  | "restaurant"
+  | "healthcare"
+  | "education"
+  | "software"
+  | "manufacturing"
+  | "construction"
+  | "nonprofit"
+  | "other";
+
 export type ReferralSource = "search" | "social" | "referral" | "ad" | "other";
 
 export interface AuthUser {
@@ -11,6 +29,85 @@ export interface BusinessProfile {
   businessType: BusinessType;
   referralSource: ReferralSource;
   ownerName: string;
+}
+
+export type SellType =
+  | "physical-products"
+  | "digital-products"
+  | "services"
+  | "memberships"
+  | "courses"
+  | "subscriptions"
+  | "software"
+  | "multiple";
+
+export type TeamSize = "solo" | "small" | "medium" | "large";
+
+export type ChallengeId =
+  | "customer-management"
+  | "lead-followup"
+  | "email"
+  | "marketing"
+  | "social-media"
+  | "scheduling"
+  | "invoices"
+  | "payments"
+  | "analytics"
+  | "file-organization"
+  | "project-management"
+  | "too-many-apps"
+  | "repetitive-work"
+  | "remembering-tasks"
+  | "automation";
+
+export type ToolId =
+  | "gmail"
+  | "outlook"
+  | "google-calendar"
+  | "google-drive"
+  | "shopify"
+  | "stripe"
+  | "square"
+  | "tiktok"
+  | "instagram"
+  | "facebook"
+  | "mailchimp"
+  | "quickbooks"
+  | "dropbox"
+  | "notion"
+  | "slack"
+  | "hubspot"
+  | "salesforce"
+  | "canva"
+  | "etsy"
+  | "amazon";
+
+export type HelpAreaId =
+  | "growing-sales"
+  | "organizing-customers"
+  | "managing-email"
+  | "marketing"
+  | "social-media"
+  | "scheduling"
+  | "automating-work"
+  | "file-organization"
+  | "analytics"
+  | "saving-time";
+
+export type AIInvolvementLevel = "assistant" | "copilot" | "autopilot";
+
+export interface OnboardingAnswers {
+  companyName: string;
+  businessType: BusinessType | null;
+  businessDescription: string;
+  sellTypes: SellType[];
+  teamSize: TeamSize | null;
+  challenges: ChallengeId[];
+  tools: ToolId[];
+  otherTools: string;
+  helpAreas: HelpAreaId[];
+  aiInvolvement: AIInvolvementLevel | null;
+  selectedAgents: SpecializedAgentId[];
 }
 
 // A real, backend-registered OAuth integration -- distinct from the mock `Integration` type
@@ -232,6 +329,7 @@ export interface SpecializedAgent {
   name: string;
   description: string;
   dataAccess: string[];
+  icon: IconName;
 }
 
 export interface AgentRouting {

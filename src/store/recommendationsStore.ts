@@ -36,6 +36,7 @@ interface RecommendationsState {
   approve: (id: string) => Promise<void>;
   dismiss: (id: string) => void;
   edit: (id: string, suggestedAction: string) => void;
+  seed: (items: Recommendation[]) => void;
 }
 
 export const useRecommendationsStore = create<RecommendationsState>()((set, get) => ({
@@ -60,4 +61,7 @@ export const useRecommendationsStore = create<RecommendationsState>()((set, get)
   dismiss: (id) => set((s) => ({ items: s.items.map((r) => (r.id === id ? { ...r, status: "dismissed" } : r)) })),
   edit: (id, suggestedAction) =>
     set((s) => ({ items: s.items.map((r) => (r.id === id ? { ...r, suggestedAction } : r)) })),
+  // Seeds recommendations generated from the onboarding wizard's answers, so the homepage
+  // reflects the owner's stated priorities immediately instead of starting from empty.
+  seed: (items) => set((s) => ({ items: [...items, ...s.items], status: "ready" })),
 }));

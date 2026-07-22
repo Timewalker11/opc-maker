@@ -20,6 +20,7 @@ interface DashboardLayoutState {
   reorder: (fromId: DashboardCardId, toId: DashboardCardId) => void;
   toggleVisible: (id: DashboardCardId) => void;
   setSize: (id: DashboardCardId, size: CardSize) => void;
+  setLayout: (cards: DashboardCardConfig[]) => void;
   restoreDefaults: () => void;
 }
 
@@ -47,6 +48,7 @@ export const useDashboardLayoutStore = create<DashboardLayoutState>()(
         set((state) => ({
           cards: state.cards.map((c) => (c.id === id ? { ...c, size } : c)),
         })),
+      setLayout: (cards) => set({ cards }),
       restoreDefaults: () => set({ cards: DEFAULT_LAYOUT, customizing: false }),
     }),
     { name: "opc_dashboard_layout" },

@@ -1,130 +1,97 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { BusinessType, ReferralSource } from "../types";
-import { AuthLayout } from "../components/auth/AuthLayout";
-import { Button } from "../components/ui/Button";
+import { Icon } from "../components/ui/Icon";
+import { WizardShell } from "../components/onboarding/wizard/WizardShell";
+import { StepWelcome } from "../components/onboarding/wizard/StepWelcome";
+import { StepBusinessType } from "../components/onboarding/wizard/StepBusinessType";
+import { StepSell } from "../components/onboarding/wizard/StepSell";
+import { StepTeamSize } from "../components/onboarding/wizard/StepTeamSize";
+import { StepChallenges } from "../components/onboarding/wizard/StepChallenges";
+import { StepTools } from "../components/onboarding/wizard/StepTools";
+import { StepHelp } from "../components/onboarding/wizard/StepHelp";
+import { StepAIInvolvement } from "../components/onboarding/wizard/StepAIInvolvement";
+import { StepAITeam } from "../components/onboarding/wizard/StepAITeam";
+import { StepBuilding } from "../components/onboarding/wizard/StepBuilding";
+import { useOnboardingWizardStore, canContinueFromStep, TOTAL_STEPS } from "../store/onboardingWizardStore";
 import { useAuthStore } from "../store/authStore";
 import { useBusinessProfileStore } from "../store/businessProfileStore";
-import { BUSINESS_TYPES, REFERRAL_SOURCES } from "../mock/onboardingOptions";
+import { useDashboardLayoutStore } from "../store/dashboardLayoutStore";
+import { useAgentSelectionStore } from "../store/agentSelectionStore";
+import { useRecommendationsStore } from "../store/recommendationsStore";
+import { computeDashboardLayout, computeStarterRecommendations } from "../utils/personalization";
+
+const WIDE_STEPS = new Set([1, 4, 5, 8]);
 
 export function Onboarding() {
-  const user = useAuthStore((s) => s.user);
+  const currentStep = useOnboardingWizardStore((s) => s.currentStep);
+  const answers = useOnboardingWizardStore((s) => s.answers);
+  const goNext = useOnboardingWizardStore((s) => s.goNext);
+  const goBack = useOnboardingWizardStore((s) => s.goBack);
+
+  const authUser = useAuthStore((s) => s.user);
   const setProfile = useBusinessProfileStore((s) => s.setProfile);
+  const setLayout = useDashboardLayoutStore((s) => s.setLayout);
+  const setActiveAgents = useAgentSelectionStore((s) => s.setActiveAgents);
+  const seedRecommendations = useRecommendationsStore((s) => s.seed);
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(0);
-  const [companyName, setCompanyName] = useState("");
-  const [businessType, setBusinessType] = useState<BusinessType>("ecommerce");
-  const [ownerName, setOwnerName] = useState(user?.name ?? "");
-  const [referralSource, setReferralSource] = useState<ReferralSource>("search");
-  const [touched, setTouched] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [finishError, setFinishError] = useState<string | null>(null);
 
-  const step1Valid = companyName.trim().length > 0;
-  const step2Valid = ownerName.trim().length > 0;
-
-  function handleNext(e: React.FormEvent) {
-    e.preventDefault();
-    setTouched(true);
-    if (!step1Valid) return;
-    setTouched(false);
-    setStep(1);
-  }
-
-  async function handleFinish(e: React.FormEvent) {
-    e.preventDefault();
-    setTouched(true);
-    if (!step2Valid) return;
-    setSubmitting(true);
-    setSubmitError(null);
+  async function handleFinish() {
+    setFinishError(null);
     const ok = await setProfile({
-      companyName: companyName.trim(),
-      businessType,
-      ownerName: ownerName.trim(),
-      referralSource,
+      companyName: answers.companyName.trim(),
+      businessType: answers.businessType ?? "other",
+      referralSource: "other",
+      ownerName: authUser?.name ?? "",
     });
-    setSubmitting(false);
-    if (ok) {
-      navigate("/", { replace: true });
-    } else {
-      setSubmitError("Couldn't save your business profile. Please try again.");
+    if (!ok) {
+      setFinishError("Couldn't save your workspace. Please try again.");
+      return;
     }
+    setActiveAgents(answers.selectedAgents);
+    setLayout(computeDashboardLayout(answers));
+    seedRecommendations(computeStarterRecommendations(answers));
+    navigate("/", { replace: true });
   }
+
+  if (currentStep === TOTAL_STEPS - 1) {
+    return (
+      <div className="wizard-page">
+        <div className="wizard-shell">
+          <div className="wizard-step">
+            <StepBuilding onFinish={handleFinish} />
+            {finishError && <p className="auth-form__error">{finishError}</p>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const canContinue = canContinueFromStep(currentStep, answers);
+  const continueLabel = currentStep === 0 ? "Get Started" : currentStep === TOTAL_STEPS - 2 ? "Build my workspace" : "Continue";
 
   return (
-    <AuthLayout title="Set up your business" description="A couple of quick questions to tailor your dashboard." width="md">
-      {step === 0 ? (
-        <form className="auth-form" onSubmit={handleNext}>
-          <div className="auth-form__field">
-            <label htmlFor="companyName">Company name</label>
-            <input
-              id="companyName"
-              type="text"
-              required
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              autoFocus
-            />
-            {touched && !step1Valid && <p className="auth-form__error">Enter your company name.</p>}
-          </div>
-          <div className="auth-form__field">
-            <label htmlFor="businessType">What type of business is it?</label>
-            <select id="businessType" value={businessType} onChange={(e) => setBusinessType(e.target.value as BusinessType)}>
-              {BUSINESS_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <Button className="auth-form__submit" variant="primary" type="submit">
-            Continue
-          </Button>
-        </form>
-      ) : (
-        <form className="auth-form" onSubmit={handleFinish}>
-          <div className="auth-form__field">
-            <label htmlFor="ownerName">Your name</label>
-            <input
-              id="ownerName"
-              type="text"
-              required
-              value={ownerName}
-              onChange={(e) => setOwnerName(e.target.value)}
-              autoFocus
-            />
-            {touched && !step2Valid && <p className="auth-form__error">Enter your name.</p>}
-          </div>
-          <div className="auth-form__field">
-            <label htmlFor="referralSource">How did you hear about us?</label>
-            <select
-              id="referralSource"
-              value={referralSource}
-              onChange={(e) => setReferralSource(e.target.value as ReferralSource)}
-            >
-              {REFERRAL_SOURCES.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          {submitError && <p className="auth-form__error">{submitError}</p>}
-          <div className="auth-wizard__row">
-            <Button variant="secondary" type="button" onClick={() => setStep(0)} disabled={submitting}>
-              Back
-            </Button>
-            <Button variant="primary" type="submit" disabled={submitting}>
-              {submitting ? "Saving…" : "Finish setup"}
-            </Button>
-          </div>
-        </form>
-      )}
-      <div className="auth-wizard__steps" aria-hidden="true">
-        <span className={`auth-wizard__step-dot ${step === 0 ? "auth-wizard__step-dot--active" : ""}`} />
-        <span className={`auth-wizard__step-dot ${step === 1 ? "auth-wizard__step-dot--active" : ""}`} />
-      </div>
-    </AuthLayout>
+    <WizardShell
+      stepIndex={currentStep}
+      totalSteps={TOTAL_STEPS}
+      onBack={goBack}
+      onContinue={goNext}
+      canContinue={canContinue}
+      continueLabel={continueLabel}
+      continueIcon={<Icon name="chevron-right" size={15} />}
+      showBack={currentStep > 0}
+      wide={WIDE_STEPS.has(currentStep)}
+    >
+      {currentStep === 0 && <StepWelcome />}
+      {currentStep === 1 && <StepBusinessType />}
+      {currentStep === 2 && <StepSell />}
+      {currentStep === 3 && <StepTeamSize />}
+      {currentStep === 4 && <StepChallenges />}
+      {currentStep === 5 && <StepTools />}
+      {currentStep === 6 && <StepHelp />}
+      {currentStep === 7 && <StepAIInvolvement />}
+      {currentStep === 8 && <StepAITeam />}
+    </WizardShell>
   );
 }

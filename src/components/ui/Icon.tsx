@@ -53,7 +53,26 @@ export type IconName =
   | "clipboard-check"
   | "user-circle"
   | "moon"
-  | "sun";
+  | "sun"
+  | "graduation-cap"
+  | "heart-pulse"
+  | "utensils"
+  | "factory"
+  | "hammer"
+  | "handshake"
+  | "camera"
+  | "globe"
+  | "package"
+  | "download"
+  | "repeat"
+  | "credit-card"
+  | "receipt"
+  | "layers"
+  | "zap"
+  | "trending-up"
+  | "grid"
+  | "eye"
+  | "rocket";
 
 const paths: Record<IconName, React.ReactNode> = {
   home: <path d="M4 11.5 12 4l8 7.5M6 9.5V20h5v-6h2v6h5V9.5" />,
@@ -291,6 +310,120 @@ const paths: Record<IconName, React.ReactNode> = {
     <>
       <circle cx="12" cy="12" r="4.5" />
       <path d="M12 2.5v3M12 18.5v3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M2.5 12h3M18.5 12h3M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1" />
+    </>
+  ),
+  "graduation-cap": (
+    <>
+      <path d="M2.5 9 12 4.5 21.5 9 12 13.5 2.5 9Z" />
+      <path d="M6.5 11v5c0 1.4 2.5 2.5 5.5 2.5s5.5-1.1 5.5-2.5v-5" />
+      <path d="M21.5 9v6" />
+    </>
+  ),
+  "heart-pulse": (
+    <>
+      <path d="M12 20.2C6 16 3 12.7 3 9a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 19 5.6" />
+      <path d="M3.5 12h4l1.5-3 2.5 5 1.5-3H21" />
+    </>
+  ),
+  utensils: (
+    <>
+      <path d="M7 3v7a2 2 0 1 1-4 0V3M5 10v11" />
+      <path d="M12 3v18M17 3c-1.5 0-2.5 1.5-2.5 4s1 4 2.5 4 2.5-1.5 2.5-4-1-4-2.5-4Zm0 8v10" />
+    </>
+  ),
+  factory: (
+    <>
+      <path d="M3 21V11l6 4v-4l6 4v-4l6 4v6H3Z" />
+      <path d="M7 21v-4M13 21v-4M17 8V3l3 2.5" />
+    </>
+  ),
+  hammer: (
+    <>
+      <path d="M14.5 6.5 18 3l3 3-3.5 3.5" />
+      <path d="M16 8 6.5 17.5a2 2 0 0 1-2.8 0l-.2-.2a2 2 0 0 1 0-2.8L13.5 4" />
+      <path d="M3 21l3.5-3.5" />
+    </>
+  ),
+  handshake: (
+    <>
+      <path d="M2.5 12.5 6 9l3.5 3-1 1a1.4 1.4 0 0 0 2 2l3-3 3 3" />
+      <path d="M9.5 12 14 7.5l3 3 3.5-3.5" />
+      <path d="M6 9 3 12M18 6.5 21.5 10" />
+    </>
+  ),
+  camera: (
+    <>
+      <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" />
+      <circle cx="12" cy="13.5" r="3.5" />
+    </>
+  ),
+  globe: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M3.5 12h17M12 3.5c2 2.3 3 5.3 3 8.5s-1 6.2-3 8.5c-2-2.3-3-5.3-3-8.5s1-6.2 3-8.5Z" />
+    </>
+  ),
+  package: (
+    <>
+      <path d="M3.5 7.5 12 3l8.5 4.5V16L12 20.5 3.5 16V7.5Z" />
+      <path d="M3.5 7.5 12 12l8.5-4.5M12 12v8.5" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v11M8 11l4 4 4-4" />
+      <path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
+    </>
+  ),
+  repeat: (
+    <>
+      <path d="M4 7.5h13l-3-3M20 16.5H7l3 3" />
+    </>
+  ),
+  "credit-card": (
+    <>
+      <rect x="3" y="6" width="18" height="13" rx="2" />
+      <path d="M3 10.5h18" />
+    </>
+  ),
+  receipt: (
+    <>
+      <path d="M6 3h12v18l-2.5-1.5L13 21l-2.5-1.5L8 21l-2-1.5V3Z" />
+      <path d="M9 8h6M9 12h6" />
+    </>
+  ),
+  layers: (
+    <>
+      <path d="M12 3.5 21 8l-9 4.5L3 8l9-4.5Z" />
+      <path d="M3 12l9 4.5L21 12M3 16l9 4.5 9-4.5" />
+    </>
+  ),
+  zap: <path d="M13 2.5 4.5 14H11l-1 7.5L19.5 10H13l1-7.5Z" />,
+  "trending-up": (
+    <>
+      <path d="M3.5 17 10 10.5l4 4 6.5-7.5" />
+      <path d="M15 6.5h5.5V12" />
+    </>
+  ),
+  grid: (
+    <>
+      <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13" y="3.5" width="7.5" height="7.5" rx="1.5" />
+      <rect x="3.5" y="13" width="7.5" height="7.5" rx="1.5" />
+      <rect x="13" y="13" width="7.5" height="7.5" rx="1.5" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  rocket: (
+    <>
+      <path d="M12 2.5c3 1 5.5 4 5.5 9-1.5 1-3.5 1.5-5.5 1.5S8 12.5 6.5 11.5c0-5 2.5-8 5.5-9Z" />
+      <path d="M9.5 16.5 8 21l3-1.5M14.5 16.5 16 21l-3-1.5" />
+      <circle cx="12" cy="10" r="1.4" />
     </>
   ),
 };

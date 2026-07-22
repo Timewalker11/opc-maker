@@ -8,7 +8,7 @@
   margin-top: 4px;
 }
 
-.integration-banner {
+.inline-banner {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -18,25 +18,30 @@
   margin-bottom: var(--space-4);
 }
 
-.integration-banner button {
+.inline-banner button {
   margin-left: auto;
   font-size: 1rem;
   color: inherit;
   opacity: 0.7;
 }
 
-.integration-banner button:hover {
+.inline-banner button:hover {
   opacity: 1;
 }
 
-.integration-banner--good {
+.inline-banner--good {
   background: var(--status-good-soft);
   color: var(--status-good);
 }
 
-.integration-banner--critical {
+.inline-banner--critical {
   background: var(--status-critical-soft);
   color: var(--status-critical);
+}
+
+.inline-banner--warning {
+  background: var(--status-warning-soft);
+  color: var(--status-warning);
 }
 
 .record-row {
@@ -104,6 +109,15 @@
   font-size: 0.87rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+
+.agent-lock-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .tag-row {

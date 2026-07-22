@@ -34,7 +34,7 @@ export function AppShell() {
               <Outlet />
             </ErrorBoundary>
           </main>
-          <ErrorBoundary label="Dashboard agent">
+          <ErrorBoundary label="Agent panel">
             <AgentPanel />
           </ErrorBoundary>
         </div>

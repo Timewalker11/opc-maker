@@ -5,19 +5,19 @@ import { onboardingSteps } from "../mock/onboarding";
 
 interface OnboardingState {
   steps: OnboardingStep[];
-  dismissed: boolean;
+  collapsed: boolean;
   toggleStep: (id: string) => void;
-  dismiss: () => void;
+  toggleCollapsed: () => void;
 }
 
 export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set) => ({
       steps: onboardingSteps,
-      dismissed: false,
+      collapsed: false,
       toggleStep: (id) =>
         set((s) => ({ steps: s.steps.map((step) => (step.id === id ? { ...step, done: !step.done } : step)) })),
-      dismiss: () => set({ dismissed: true }),
+      toggleCollapsed: () => set((s) => ({ collapsed: !s.collapsed })),
     }),
     { name: "opc_onboarding_v2" },
   ),

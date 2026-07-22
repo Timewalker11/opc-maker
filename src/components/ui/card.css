@@ -59,6 +59,18 @@
   margin-left: auto;
 }
 
+.ui-card__collapse-btn {
+  display: flex;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+}
+
+.ui-card__collapse-btn:hover {
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+}
+
 .ui-card__body {
   flex: 1;
   padding: var(--space-4) var(--space-5) var(--space-5);

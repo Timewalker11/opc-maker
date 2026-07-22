@@ -4,6 +4,7 @@ import { AuthLayout } from "../components/auth/AuthLayout";
 import { Button } from "../components/ui/Button";
 import { useAuthStore } from "../store/authStore";
 import { useBusinessProfileStore } from "../store/businessProfileStore";
+import { useOnboardingWizardStore } from "../store/onboardingWizardStore";
 
 export function Signup() {
   const [name, setName] = useState("");
@@ -13,6 +14,7 @@ export function Signup() {
   const status = useAuthStore((s) => s.status);
   const errorMessage = useAuthStore((s) => s.errorMessage);
   const resetProfile = useBusinessProfileStore((s) => s.reset);
+  const resetWizard = useOnboardingWizardStore((s) => s.reset);
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -20,6 +22,7 @@ export function Signup() {
     const ok = await signup(name, email, password);
     if (ok) {
       resetProfile();
+      resetWizard();
       navigate("/onboarding", { replace: true });
     }
   }

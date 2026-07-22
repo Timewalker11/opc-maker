@@ -119,31 +119,3 @@
   text-decoration: underline;
 }
 
-.auth-wizard__steps {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  margin: var(--space-5) 0 0;
-}
-
-.auth-wizard__step-dot {
-  width: 24px;
-  height: 4px;
-  border-radius: var(--radius-full);
-  background: var(--surface-sunken);
-}
-
-.auth-wizard__step-dot--active {
-  background: var(--text-primary);
-}
-
-.auth-wizard__row {
-  display: flex;
-  gap: var(--space-3);
-  margin-top: var(--space-2);
-}
-
-.auth-wizard__row .ui-btn {
-  flex: 1;
-  justify-content: center;
-}

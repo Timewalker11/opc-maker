@@ -1,8 +1,11 @@
 import { create } from "zustand";
 import type { AgentChatMessage, AgentRouting, SpecializedAgentId } from "../types";
-import { generateAgentReply } from "../services/agent";
+import { generateAgentReply, generateSpecializedAgentReply } from "../services/agent";
 import { sendEmailReply, publishPost, reconnectIntegration } from "../services/actions";
 import { useDemoStateStore } from "./demoStateStore";
+import { specializedAgents, findAgent } from "../mock/agents";
+
+export type ChatId = "dashboard" | SpecializedAgentId;
 
 export interface AgentActivityLogEntry {
   id: string;
@@ -14,20 +17,47 @@ export interface AgentActivityLogEntry {
 
 type AgentStatus = "online" | "thinking" | "unavailable";
 
-interface AgentState {
-  status: AgentStatus;
-  messages: AgentChatMessage[];
-  activityLog: AgentActivityLogEntry[];
-  sendMessage: (text: string) => Promise<void>;
-  respondToApproval: (messageId: string, agentId: SpecializedAgentId, approve: boolean) => Promise<void>;
-  undoActivity: (entryId: string) => void;
-  logActivity: (description: string, undoable: boolean) => void;
-}
-
 let entryCounter = 0;
 function nextEntryId() {
   entryCounter += 1;
   return `agent_activity_${entryCounter}`;
+}
+
+function greetingFor(chatId: ChatId): AgentChatMessage {
+  if (chatId === "dashboard") {
+    return {
+      id: "agent_msg_seed_dashboard",
+      role: "assistant",
+      content:
+        "Hi, I'm your dashboard agent. Once you connect your accounts, I can summarize your business, flag what needs attention, and answer questions using your real data. Ask me anything to get started.",
+      timestamp: new Date().toISOString(),
+    };
+  }
+  const agent = findAgent(chatId);
+  const content = agent
+    ? `Hi, I'm your ${agent.name}. ${agent.description}. Ask me anything within ${agent.dataAccess.join(", ").toLowerCase()}.`
+    : "Hi, how can I help?";
+  return { id: `agent_msg_seed_${chatId}`, role: "assistant", content, timestamp: new Date().toISOString() };
+}
+
+function initialMessagesByChat(): Record<string, AgentChatMessage[]> {
+  const map: Record<string, AgentChatMessage[]> = { dashboard: [greetingFor("dashboard")] };
+  specializedAgents.forEach((a) => {
+    map[a.id] = [greetingFor(a.id)];
+  });
+  return map;
+}
+
+interface AgentState {
+  activeChatId: ChatId;
+  setActiveChatId: (id: ChatId) => void;
+  statusByChat: Record<string, AgentStatus>;
+  messagesByChat: Record<string, AgentChatMessage[]>;
+  activityLog: AgentActivityLogEntry[];
+  sendMessage: (chatId: ChatId, text: string) => Promise<void>;
+  respondToApproval: (chatId: ChatId, messageId: string, agentId: SpecializedAgentId, approve: boolean) => Promise<void>;
+  undoActivity: (entryId: string) => void;
+  logActivity: (description: string, undoable: boolean) => void;
 }
 
 async function executeRouting(routing: AgentRouting): Promise<{ success: boolean }> {
@@ -48,73 +78,63 @@ async function executeRouting(routing: AgentRouting): Promise<{ success: boolean
 }
 
 export const useAgentStore = create<AgentState>()((set, get) => ({
-  status: "online",
-  messages: [
-    {
-      id: "agent_msg_seed",
-      role: "assistant",
-      content: "Hi, I'm your dashboard agent. Once you connect your accounts, I can summarize your business, flag what needs attention, and answer questions using your real data. Ask me anything to get started.",
-      timestamp: new Date().toISOString(),
-    },
-  ],
+  activeChatId: "dashboard",
+  setActiveChatId: (id) => set({ activeChatId: id }),
+  statusByChat: {},
+  messagesByChat: initialMessagesByChat(),
   activityLog: [],
-  sendMessage: async (text) => {
+  sendMessage: async (chatId, text) => {
     const userMessage: AgentChatMessage = {
       id: `user_${Date.now()}`,
       role: "user",
       content: text,
       timestamp: new Date().toISOString(),
     };
-    set((s) => ({ messages: [...s.messages, userMessage] }));
+    set((s) => ({
+      messagesByChat: { ...s.messagesByChat, [chatId]: [...(s.messagesByChat[chatId] ?? []), userMessage] },
+    }));
 
     if (useDemoStateStore.getState().agentUnavailable) {
-      set({ status: "unavailable" });
+      set((s) => ({ statusByChat: { ...s.statusByChat, [chatId]: "unavailable" } }));
       return;
     }
 
-    set({ status: "thinking" });
-    const response = await generateAgentReply(text);
-    set((s) => ({ messages: [...s.messages, response], status: "online" }));
+    set((s) => ({ statusByChat: { ...s.statusByChat, [chatId]: "thinking" } }));
+    const response = chatId === "dashboard" ? await generateAgentReply(text) : await generateSpecializedAgentReply(chatId, text);
+    set((s) => ({
+      messagesByChat: { ...s.messagesByChat, [chatId]: [...(s.messagesByChat[chatId] ?? []), response] },
+      statusByChat: { ...s.statusByChat, [chatId]: "online" },
+    }));
   },
-  respondToApproval: async (messageId, agentId, approve) => {
-    const message = get().messages.find((m) => m.id === messageId);
+  respondToApproval: async (chatId, messageId, agentId, approve) => {
+    const messages = get().messagesByChat[chatId] ?? [];
+    const message = messages.find((m) => m.id === messageId);
     const routingEntry = message?.routing?.find((r) => r.agentId === agentId);
     if (!routingEntry) return;
 
-    if (!approve) {
+    function updateRoutingStatus(status: AgentRouting["status"]) {
       set((s) => ({
-        messages: s.messages.map((m) =>
-          m.id === messageId
-            ? { ...m, routing: m.routing?.map((r) => (r.agentId === agentId ? { ...r, status: "failed" as const } : r)) }
-            : m,
-        ),
+        messagesByChat: {
+          ...s.messagesByChat,
+          [chatId]: (s.messagesByChat[chatId] ?? []).map((m) =>
+            m.id === messageId
+              ? { ...m, routing: m.routing?.map((r) => (r.agentId === agentId ? { ...r, status } : r)) }
+              : m,
+          ),
+        },
       }));
+    }
+
+    if (!approve) {
+      updateRoutingStatus("failed");
       get().logActivity(`Declined: ${routingEntry.proposedAction}`, false);
       return;
     }
 
-    set((s) => ({
-      messages: s.messages.map((m) =>
-        m.id === messageId
-          ? { ...m, routing: m.routing?.map((r) => (r.agentId === agentId ? { ...r, status: "running" as const } : r)) }
-          : m,
-      ),
-    }));
-
+    updateRoutingStatus("running");
     const result = await executeRouting(routingEntry);
-    const finalStatus = result.success ? "success" : "failed";
-
-    set((s) => ({
-      messages: s.messages.map((m) =>
-        m.id === messageId
-          ? { ...m, routing: m.routing?.map((r) => (r.agentId === agentId ? { ...r, status: finalStatus } : r)) }
-          : m,
-      ),
-    }));
-    get().logActivity(
-      `${result.success ? "Completed" : "Failed"}: ${routingEntry.proposedAction}`,
-      result.success,
-    );
+    updateRoutingStatus(result.success ? "success" : "failed");
+    get().logActivity(`${result.success ? "Completed" : "Failed"}: ${routingEntry.proposedAction}`, result.success);
   },
   undoActivity: (entryId) =>
     set((s) => ({ activityLog: s.activityLog.map((e) => (e.id === entryId ? { ...e, undone: true } : e)) })),
